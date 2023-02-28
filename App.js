@@ -161,7 +161,8 @@ const App = () => {
   
   const renderBtns = (item, index) => (
     <TouchableOpacity
-      style={[styles.inpBtn, item.btn == '=' && {backgroundColor: 'lightblue'} ]}
+      style={[styles.inpBtn, item.btn === '=' && {backgroundColor: 'lightblue'}, item.btn === '%' && {backgroundColor: 'rgb(50, 164, 255)'} ]}
+      disabled={item.btn === '%'}
       onPress={() => onClick(item, index)}
     >
       <View>
@@ -252,7 +253,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   inpBtn: {
-    width: '28%',
+    width: SCREEN_HEIGHT/10,
     aspectRatio: 1,
     marginVertical: 10,
     backgroundColor: 'deepskyblue',
