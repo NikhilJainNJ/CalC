@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Dimensions,
   FlatList,
@@ -39,17 +39,13 @@ const App = () => {
   const inputRef = useRef(null);
   const outputRef = useRef(null);
   
-  useEffect(() => {
-    console.log('OP STACK ===> ',opStack);
-  }, [opStack]);
-  
   const onClick = (item, index) => {
     console.log('Button clicked!! ==> ', item);
     const ops = ['/', '*', '-', '+']
     if(item.num)
       setInputValue(i => i+item.num);
     else if(item.operator) {
-      if ((item.operator != '-' && inputValue.length === 0) || (opStack.length ===1 && inputValue.length === 1)) return
+      if ((item.operator != '-' && inputValue.length === 0) || (opStack.length === 1 && inputValue.length === 1)) return
 
       let v = inputValue;
       let arr = opStack;
@@ -80,21 +76,18 @@ const App = () => {
 
       // -- ***** -- CALCULATION PART -- ***** --
       let stack1 = inputValue.split('+');
-      // console.log(stack1);
       let stack2 = stack1.reduce(
         (acc, curr) => {
           let interRes = curr.split('-');
           return [ ...acc, ...interRes ];
         }, []
       );
-      // console.log(stack2);
       let stack3 = stack2.reduce(
         (acc, curr) => {
           let interRes = curr.split('*');
           return [ ...acc, ...interRes ];
         }, []
       );
-      // console.log(stack3);
       let stack4 = [];
       stack4 = stack3.reduce(
         (acc, curr) => {
@@ -104,50 +97,62 @@ const App = () => {
       );
       console.log(stack4);
       console.log(opStack);
-      let inpOps = [ ...opStack ];
+      let inpOps = [ ...opStack ], index = 0;
       // while (inpOps.length > 0) {
-        let index = 0;
         while (inpOps.indexOf('/') >= 0) {
           index = inpOps.indexOf('/');
           console.log('index of / =', index);
+          
           inpOps.splice(index, 1);
           stack4.splice(index, 2, `${stack4[index]/stack4[index+1]}`);
-          console.log('values stack = ', stack4);
+          
+          console.log('values stack ======== ', stack4);
         }
-        console.log('OPSTACK ======> ', inpOps, index)
+        console.log('OPSTACK ======> "/" ', inpOps)
+        
         while (inpOps.indexOf("*") >= 0) {
           index = inpOps.indexOf("*");
           console.log('index of * =', index);
+          
           inpOps.splice(index, 1);
           stack4.splice(index, 2, `${stack4[index]*stack4[index+1]}`);
+          
           console.log('values stack = ', stack4);
         }
-        console.log('OPSTACK ======> ', inpOps, index)
+        console.log('OPSTACK ======> ', inpOps);
+        
         while (inpOps.indexOf('+') >= 0) {
           index = inpOps.indexOf('+');
-          let sign = inpOps[index-1] === '-';
           console.log('index of + =', index);
+          
           inpOps.splice(index, 1);
-          let sum = sign ? -Number(stack4[index]) + Number(stack4[index+1]) : Number(stack4[index]) + Number(stack4[index+1]);
-          sum = sum < 0 ? sum * -1 : sum;
+          let sum = `${index != 0 ? inpOps[index-1] : '+'}1` * Number(stack4[index]) + Number(stack4[index+1]);
+          // console.log('SUM value ---> ', sum);
+          
+          sum = index != 0 && inpOps[index-1] === '-' ? sum * -1 : sum;
           stack4.splice(index, 2, `${sum}`);
+          
           console.log('values stack = ', stack4);
         }
-        console.log('OPSTACK ======> ', inpOps, index)
+        console.log('OPSTACK ======> ', inpOps);
+        
         while (inpOps.indexOf('-') >= 0) {
           index = inpOps.indexOf('-');
           console.log('index of - =', index);
+          
           inpOps.splice(index, 1);
           if (stack4[index] === '') {
-            stack4.splice(index, 1);
-            continue;
+            // stack4.splice(index, 1);
+            // continue;
           }
           let diff = stack4[index]-stack4[index+1];
+          // console.log('DIFF value --> ', diff);
           stack4.splice(index, 2, `${diff}`);
+          
           console.log('values stack = ', stack4);
         }
-        console.log('OPSTACK ======> ', inpOps, index)
-        console.log('values stack => ', stack4);
+        console.log('OPSTACK ======> ', inpOps);
+        console.log('FINAL values stack ======> ', stack4);
       // }
       const res = stack4[0] === 'NaN' ? '0' : stack4[0];
       setResultValue(res);
