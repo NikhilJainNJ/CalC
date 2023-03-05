@@ -153,7 +153,7 @@ const App = () => {
         console.log('OPSTACK ======> ', inpOps);
         console.log('FINAL values stack ======> ', stack4);
       // }
-      const res = stack4[0] === 'NaN' ? '0' : stack4[0];
+      const res = stack4[0] === 'NaN' ? '0' : Number(stack4[0]).toFixed(10);
       setResultValue(res);
     }
   };
@@ -165,7 +165,7 @@ const App = () => {
       onPress={() => onClick(item, index)}
     >
       <View>
-        <Text style={styles.inpBtnText}>{`${item.num || item.btn || item.operator}`}</Text>
+        {item.btn != '%' && <Text style={styles.inpBtnText}>{`${item.num || item.btn || item.operator}`}</Text>}
       </View>
     </TouchableOpacity>
   );
@@ -220,19 +220,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   calculateBox: {
-    // height: '30%',
     flex: 1,
     // height: SCREEN_HEIGHT/3,
     backgroundColor: 'lightblue',
     alignItems: 'flex-end',
     justifyContent: 'space-evenly',
     overflow: 'scroll',
+    paddingHorizontal: 5
   },
   inpValueText: {
     fontSize: 50,
     lineHeight: 60,
     // borderWidth: 1,
-    // overflow: 'scroll'
+    // overflow: 'scroll',
   },
   btnsBox: {
     width: '100%',
