@@ -41,15 +41,18 @@ const App = () => {
   
   const onClick = (item, index) => {
     console.log('Button clicked!! ==> ', item);
-    const ops = ['/', '*', '-', '+']
+    const ops = ['/', '*', '-', '+'];
     if(item.num)
       setInputValue(i => i+item.num);
     else if(item.operator) {
       if ((item.operator != '-' && inputValue.length === 0) || (opStack.length === 1 && inputValue.length === 1)) return
 
-      let v = inputValue;
-      let arr = opStack;
-      if (ops.includes(v.charAt(v.length-1))) {
+      let v = inputValue, arr = opStack;
+      if (['/', '*'].includes(v.charAt(v.length-1)) && (item.operator === '-')) {
+        setInputValue(i => i+item.operator);
+      } else if (['/-', '*-'].includes(v.slice(v.length-2))) {
+        if (item.operator != '-') setInputValue(i => i.slice(0, i.length-1));
+      } else if (ops.includes(v.charAt(v.length-1))) {
         // call del func & then add item.operator
         setInputValue(i => i.slice(0, i.length-1)+item.operator);
         arr.pop();
@@ -64,8 +67,7 @@ const App = () => {
       setInputValue('') || setResultValue('') || setOpStack([]);
     else if(item.btn == 'DEL') {
       setInputValue(i => i.slice(0, i.length-1));
-      let v = inputValue;
-      let arr = opStack;
+      let v = inputValue, arr = opStack;
       if (ops.includes(v.charAt(v.length-1))) {
         arr.pop();
         setOpStack(arr);
@@ -73,7 +75,6 @@ const App = () => {
     } else if(item.btn == '=') {
       if ( (inputValue.length === 0) ||
       (opStack.length == 1 && inputValue.length === 1)) return
-
       // -- ***** -- CALCULATION PART -- ***** --
       let stack1 = inputValue.split('+');
       let stack2 = stack1.reduce(
@@ -88,15 +89,19 @@ const App = () => {
           return [ ...acc, ...interRes ];
         }, []
       );
-      let stack4 = [];
-      stack4 = stack3.reduce(
+      let stack4 = stack3.reduce(
         (acc, curr) => {
           let interRes = curr.split('/');
           return [ ...acc, ...interRes ];
         }, []
       );
-      console.log(stack4);
       console.log(opStack);
+      stack4.forEach((e, i) => {
+        if(e == '' && i != 0) {
+          stack4.splice(i, 2, stack4[i+1]*-1);
+        }
+      });
+      console.log(stack4);
       let inpOps = [ ...opStack ], index = 0;
       // while (inpOps.length > 0) {
         while (inpOps.indexOf('/') >= 0) {
@@ -108,7 +113,6 @@ const App = () => {
           
           console.log('values stack ======== ', stack4);
         }
-        console.log('OPSTACK ======> "/" ', inpOps)
         
         while (inpOps.indexOf("*") >= 0) {
           index = inpOps.indexOf("*");
@@ -119,7 +123,6 @@ const App = () => {
           
           console.log('values stack = ', stack4);
         }
-        console.log('OPSTACK ======> ', inpOps);
         
         while (inpOps.indexOf('+') >= 0) {
           index = inpOps.indexOf('+');
@@ -127,14 +130,11 @@ const App = () => {
           
           inpOps.splice(index, 1);
           let sum = `${index != 0 ? inpOps[index-1] : '+'}1` * Number(stack4[index]) + Number(stack4[index+1]);
-          // console.log('SUM value ---> ', sum);
-          
           sum = index != 0 && inpOps[index-1] === '-' ? sum * -1 : sum;
           stack4.splice(index, 2, `${sum}`);
           
           console.log('values stack = ', stack4);
         }
-        console.log('OPSTACK ======> ', inpOps);
         
         while (inpOps.indexOf('-') >= 0) {
           index = inpOps.indexOf('-');
@@ -146,7 +146,6 @@ const App = () => {
             // continue;
           }
           let diff = stack4[index]-stack4[index+1];
-          // console.log('DIFF value --> ', diff);
           stack4.splice(index, 2, `${diff}`);
           
           console.log('values stack = ', stack4);
