@@ -153,7 +153,7 @@ const App = () => {
         console.log('OPSTACK ======> ', inpOps);
         console.log('FINAL values stack ======> ', stack4);
       // }
-      const res = stack4[0] === 'NaN' ? '0' : Number(stack4[0]).toFixed(10);
+      const res = stack4[0] === 'NaN' ? '0' : stack4[0].slice(stack4[0].indexOf('.')).length > 8 ? Number(stack4[0]).toFixed(8) : stack4[0];
       setResultValue(res);
     }
   };
